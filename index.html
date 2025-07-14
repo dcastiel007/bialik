@@ -433,8 +433,9 @@
         <div class="search-section">
             <div class="search-controls">
                 <input type="text" id="searchInput" placeholder="חפשו סיפור לפי נושא או מילות מפתח..." class="search-input">
-                <button class="random-story-btn" onclick="playRandomStory()">תשמיע לי סיפור שבחרת</button>
+                <button class="random-story-btn" onclick="playRandomStory()" id="randomBtn">🎲 תשמיע לי סיפור שבחרת</button>
             </div>
+            <div id="audioStoriesCount" style="text-align: center; margin-top: 10px; color: #666; font-size: 0.9rem;"></div>
         </div>
 
         <div class="stories-grid" id="storiesGrid">
@@ -508,7 +509,7 @@
 
             <div class="admin-section">
                 <h3>📊 סטטיסטיקות</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
                     <div style="background: #3498db; padding: 15px; border-radius: 8px; text-align: center;">
                         <div style="font-size: 2rem;" id="totalStories">0</div>
                         <div>סיפורים</div>
@@ -661,16 +662,20 @@
             displayStories();
         }
 
-        // השמעת סיפור רנדומלי
+        // השמעת סיפור רנדומלי - רק עם קובץ אודיו
         function playRandomStory() {
             const availableStories = filteredStories.length > 0 ? filteredStories : stories;
-            if (availableStories.length === 0) {
-                showErrorMessage('אין סיפורים זמינים');
+            
+            // סינון רק סיפורים עם קובץ אודיו
+            const storiesWithAudio = availableStories.filter(story => story.audioData && story.audioData.length > 0);
+            
+            if (storiesWithAudio.length === 0) {
+                showErrorMessage('אין סיפורים עם קובץ אודיו זמינים. אנא העלו קובץ אודיו לפחות לסיפור אחד.');
                 return;
             }
             
-            const randomIndex = Math.floor(Math.random() * availableStories.length);
-            const randomStory = availableStories[randomIndex];
+            const randomIndex = Math.floor(Math.random() * storiesWithAudio.length);
+            const randomStory = storiesWithAudio[randomIndex];
             playStory(randomStory.id);
         }
 
@@ -684,6 +689,7 @@
             
             if (storiesToShow.length === 0) {
                 grid.innerHTML = '<div style="text-align: center; color: #7f8c8d; grid-column: 1/-1;">לא נמצאו סיפורים</div>';
+                updateAudioStoriesCount();
                 return;
             }
             
@@ -707,6 +713,30 @@
                 `;
                 grid.appendChild(card);
             });
+            
+            updateAudioStoriesCount();
+        }
+
+        // עדכון מספר הסיפורים עם אודיו
+        function updateAudioStoriesCount() {
+            const availableStories = filteredStories.length > 0 || document.getElementById('searchInput').value ? 
+                                    filteredStories : stories;
+            const storiesWithAudio = availableStories.filter(story => story.audioData && story.audioData.length > 0);
+            
+            const countDiv = document.getElementById('audioStoriesCount');
+            const randomBtn = document.getElementById('randomBtn');
+            
+            if (storiesWithAudio.length === 0) {
+                countDiv.innerHTML = '🔇 אין סיפורים עם אודיו זמינים';
+                randomBtn.disabled = true;
+                randomBtn.style.background = '#95a5a6';
+                randomBtn.innerHTML = '🔇 אין סיפורים עם אודיו';
+            } else {
+                countDiv.innerHTML = `🎵 ${storiesWithAudio.length} סיפורים עם אודיו זמינים`;
+                randomBtn.disabled = false;
+                randomBtn.style.background = '#e74c3c';
+                randomBtn.innerHTML = '🎲 תשמיע לי סיפור שבחרת';
+            }
         }
 
         // נגינת סיפור - התיקון העיקרי!
@@ -913,6 +943,13 @@
                 return;
             }
             
+            // הוספת סיכום בראש הרשימה
+            const storiesWithAudio = stories.filter(story => story.audioData && story.audioData.length > 0);
+            const summary = document.createElement('div');
+            summary.style.cssText = 'background: #3498db; color: white; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center;';
+            summary.innerHTML = `📊 סה"כ ${stories.length} סיפורים | 🎵 ${storiesWithAudio.length} עם אודיו | 🔇 ${stories.length - storiesWithAudio.length} ללא אודיו`;
+            list.appendChild(summary);
+            
             stories.forEach(story => {
                 const item = document.createElement('div');
                 item.className = 'story-item';
@@ -961,16 +998,36 @@
             }
             
             displayStoriesInAdmin();
+            updateAudioStoriesCount();
         }
 
         // עדכון סטטיסטיקות
         function updateStats() {
+            const storiesWithAudio = stories.filter(story => story.audioData && story.audioData.length > 0);
+            
             document.getElementById('totalStories').textContent = stories.length;
             document.getElementById('totalPlays').textContent = playStats.totalPlays;
             
             const storageUsed = JSON.stringify(stories).length;
             const storageUsedMB = (storageUsed / (1024 * 1024)).toFixed(2);
             document.getElementById('storageInfo').textContent = `${storageUsedMB} MB`;
+            
+            // עדכון או הוספת סטטיסטיקת אודיו
+            const statsContainer = document.querySelector('.stats-grid');
+            let audioStatsDiv = document.querySelector('.audio-stats');
+            
+            if (!audioStatsDiv) {
+                audioStatsDiv = document.createElement('div');
+                audioStatsDiv.className = 'audio-stats';
+                audioStatsDiv.style.cssText = 'background: #f39c12; padding: 15px; border-radius: 8px; text-align: center;';
+                audioStatsDiv.innerHTML = `
+                    <div class="audio-stats-number" style="font-size: 2rem;">${storiesWithAudio.length}</div>
+                    <div>עם אודיו</div>
+                `;
+                statsContainer.appendChild(audioStatsDiv);
+            } else {
+                audioStatsDiv.querySelector('.audio-stats-number').textContent = storiesWithAudio.length;
+            }
         }
 
         // הוספת סיפורים לדוגמה
@@ -1002,6 +1059,7 @@
             localStorage.setItem('stories', JSON.stringify(stories));
             filteredStories = stories;
             displayStoriesInAdmin();
+            displayStories();
             updateStats();
         }
 
@@ -1043,7 +1101,13 @@
         function resetAllData() {
             if (confirm('האם אתם בטוחים שברצונכם למחוק את כל הנתונים?')) {
                 localStorage.clear();
-                location.reload();
+                stories = [];
+                filteredStories = [];
+                playStats = { totalPlays: 0 };
+                displayStories();
+                displayStoriesInAdmin();
+                updateStats();
+                showSuccessMessage('כל הנתונים נמחקו בהצלחה');
             }
         }
 
