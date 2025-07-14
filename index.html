@@ -19,7 +19,7 @@
             align-items: center;
             justify-content: center;
             direction: rtl;
-            padding-bottom: 100px; /* מקום לכפתורים הצפים */
+            padding-bottom: 100px;
         }
 
         .container {
@@ -30,7 +30,7 @@
             max-width: 800px;
             width: 90%;
             backdrop-filter: blur(10px);
-            margin: 20px auto; /* מרווח יפה מלמעלה ומלמטה */
+            margin: 20px auto;
         }
 
         .header {
@@ -156,52 +156,51 @@
             background: #219a52;
         }
 
-        .qr-section {
-            text-align: center;
-            margin-top: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 15px;
+        .audio-player {
             display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+            border-top: 3px solid #3498db;
+            z-index: 1000;
         }
 
-        .qr-code {
-            width: 200px;
-            height: 200px;
-            background: white;
-            margin: 20px auto;
-            border: 2px solid #ddd;
+        .player-controls {
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
-            color: #666;
+            gap: 15px;
+            margin-bottom: 10px;
         }
 
-        .voice-assistant {
-            display: none;
-            text-align: center;
-            margin-top: 30px;
-            padding: 20px;
-            background: #f0f8ff;
-            border-radius: 15px;
-        }
-
-        .voice-btn {
-            padding: 15px 30px;
-            background: #e74c3c;
+        .control-btn {
+            padding: 10px 15px;
+            background: #3498db;
             color: white;
             border: none;
-            border-radius: 50px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 1.1rem;
-            margin: 10px;
+            font-size: 16px;
             transition: all 0.3s ease;
         }
 
-        .voice-btn:hover {
-            background: #c0392b;
-            transform: scale(1.05);
+        .control-btn:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .volume-control input[type="range"] {
+            width: 100px;
         }
 
         .admin-panel {
@@ -291,6 +290,7 @@
             right: 20px;
             display: flex;
             gap: 10px;
+            z-index: 999;
         }
 
         .nav-btn {
@@ -307,39 +307,6 @@
         .nav-btn:hover {
             background: #2c3e50;
             transform: translateY(-2px);
-        }
-
-        .audio-player {
-            display: none;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            padding: 20px;
-            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
-            border-top: 3px solid #3498db;
-        }
-
-        .player-controls {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .control-btn {
-            padding: 10px;
-            background: #3498db;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-        }
-
-        .progress-bar {
-            flex: 1;
-            margin: 0 20px;
         }
 
         .admin-login {
@@ -409,8 +376,22 @@
             background: #7f8c8d;
         }
 
-        .hidden {
-            display: none !important;
+        .error-message {
+            background: #e74c3c;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none;
+        }
+
+        .success-message {
+            background: #27ae60;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none;
         }
 
         @media (max-width: 768px) {
@@ -449,7 +430,6 @@
             <p>גלו את הסיפורים המרתקים של תל אביב</p>
         </div>
 
-        <!-- חיפוש וסיפור רנדומלי -->
         <div class="search-section">
             <div class="search-controls">
                 <input type="text" id="searchInput" placeholder="חפשו סיפור לפי נושא או מילות מפתח..." class="search-input">
@@ -457,30 +437,30 @@
             </div>
         </div>
 
-        <!-- רשימת סיפורים -->
         <div class="stories-grid" id="storiesGrid">
             <!-- הסיפורים יוצגו כאן דינמית -->
         </div>
 
-        <!-- נגן אודיו -->
+        <!-- נגן אודיו מתוקן -->
         <div class="audio-player" id="audioPlayer">
             <div class="player-controls">
-                <button class="control-btn" onclick="togglePlay()" id="playPauseBtn">⏯️</button>
-                <audio id="realAudioPlayer" controls style="flex: 1; margin: 0 15px; display: none;" volume="1.0"></audio>
-                <div class="progress-bar" id="simulationProgress" style="flex: 1; margin: 0 15px;">
-                    <input type="range" id="progressBar" min="0" max="100" value="0" style="width: 100%;">
+                <button class="control-btn" onclick="togglePlay()" id="playPauseBtn">▶️</button>
+                <button class="control-btn" onclick="skipBackward()">⏪</button>
+                <button class="control-btn" onclick="skipForward()">⏩</button>
+                <div class="volume-control">
+                    <span>🔊</span>
+                    <input type="range" id="volumeControl" min="0" max="100" value="100" onchange="updateVolume()">
                 </div>
-                <div class="volume-control" style="display: flex; align-items: center; gap: 5px;">
-                    <span style="font-size: 0.8rem;">🔊</span>
-                    <input type="range" id="volumeControl" min="0" max="100" value="100" style="width: 80px;" onchange="updateVolume()">
-                </div>
-                <button class="control-btn" onclick="testAudio()" id="testBtn" style="background: #f39c12;" title="בדיקת אודיו">🔍</button>
-                <button class="control-btn" onclick="closePlayer()">✖️</button>
+                <button class="control-btn" onclick="testAudio()" style="background: #f39c12;">🔍</button>
+                <button class="control-btn" onclick="closePlayer()">❌</button>
             </div>
-            <div style="text-align: center; margin-top: 10px;">
-                <span id="currentStoryTitle">שם הסיפור</span>
-                <div id="audioStatus" style="font-size: 0.8rem; color: #7f8c8d; margin-top: 5px;"></div>
-                <div id="audioDebug" style="font-size: 0.7rem; color: #95a5a6; margin-top: 3px;"></div>
+            
+            <!-- נגן אודיו אמיתי -->
+            <audio id="realAudioPlayer" controls style="width: 100%; margin: 10px 0;"></audio>
+            
+            <div style="text-align: center;">
+                <div id="currentStoryTitle" style="font-weight: bold; margin-bottom: 5px;">שם הסיפור</div>
+                <div id="audioStatus" style="font-size: 0.9rem; color: #666;">מוכן להשמעה</div>
             </div>
         </div>
 
@@ -488,17 +468,11 @@
         <div class="admin-panel" id="adminPanel">
             <h2>🔧 פאנל ניהול</h2>
             
-            <!-- ניהול סיפורים -->
             <div class="admin-section">
                 <h3>📚 ניהול סיפורים</h3>
                 
-                <div style="background: #3498db; color: white; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 0.9rem;">
-                    <strong>💡 הוראות להעלאת אודיו:</strong><br>
-                    1. מלאו את כל השדות<br>
-                    2. בחרו קובץ MP3 איכותי (עד 10MB)<br>
-                    3. המתינו להודעת אישור<br>
-                    4. אם יש בעיה, לחצו על 🔍 ליד הסיפור לדיבאג
-                </div>
+                <div class="error-message" id="errorMessage"></div>
+                <div class="success-message" id="successMessage"></div>
                 
                 <div class="form-group">
                     <label>שם הסיפור:</label>
@@ -510,7 +484,7 @@
                 </div>
                 <div class="form-group">
                     <label>משך (דקות):</label>
-                    <input type="number" id="storyDuration" placeholder="5" min="1">
+                    <input type="number" id="storyDuration" placeholder="5" min="1" max="60">
                 </div>
                 <div class="form-group">
                     <label>שפה:</label>
@@ -521,51 +495,17 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>קובץ אודיו (אופציונלי):</label>
+                    <label>קובץ אודיו:</label>
                     <input type="file" id="storyFile" accept="audio/*">
-                    <small style="color: #7f8c8d; display: block; margin-top: 5px;">
-                        💡 הקובץ יישמר בתוך האתר ויתנגן ישירות<br>
-                        🎵 פורמטים נתמכים: MP3, WAV, OGG, M4A<br>
-                        ⚠️ אם אין סאונד, בדקו שעוצמת הקול במחשב מקסימלית
+                    <small style="color: #bdc3c7; display: block; margin-top: 5px;">
+                        🎵 פורמטים נתמכים: MP3, WAV, OGG (מקס 10MB)
                     </small>
                 </div>
                 <button class="admin-btn" onclick="addStory()">➕ הוסף סיפור</button>
                 
-                <div class="story-list" id="storyList">
-                    <!-- רשימת הסיפורים תוצג כאן -->
-                </div>
+                <div class="story-list" id="storyList"></div>
             </div>
 
-            <!-- ניהול משתמשים -->
-            <div class="admin-section">
-                <h3>👥 ניהול משתמשים</h3>
-                <div class="form-group">
-                    <label>שם משתמש:</label>
-                    <input type="text" id="userName" placeholder="הכניסו שם">
-                </div>
-                <div class="form-group">
-                    <label>מספר טלפון:</label>
-                    <input type="tel" id="userPhone" placeholder="05XXXXXXXX">
-                </div>
-                <div class="form-group">
-                    <label>שפה מועדפת:</label>
-                    <select id="userLanguage">
-                        <option value="he">עברית</option>
-                        <option value="en">English</option>
-                        <option value="ar">العربية</option>
-                        <option value="ru">Русский</option>
-                        <option value="am">አማርኛ</option>
-                    </select>
-                </div>
-                <button class="admin-btn" onclick="addUser()">➕ הוסף משתמש</button>
-                <button class="admin-btn" onclick="exportUsers()">📤 ייצא רשימה</button>
-                
-                <div class="user-list" id="userList">
-                    <!-- רשימת המשתמשים תוצג כאן -->
-                </div>
-            </div>
-
-            <!-- סטטיסטיקות -->
             <div class="admin-section">
                 <h3>📊 סטטיסטיקות</h3>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
@@ -573,59 +513,19 @@
                         <div style="font-size: 2rem;" id="totalStories">0</div>
                         <div>סיפורים</div>
                     </div>
-                    <div style="background: #27ae60; padding: 15px; border-radius: 8px; text-align: center;">
-                        <div style="font-size: 2rem;" id="totalUsers">0</div>
-                        <div>משתמשים</div>
-                    </div>
                     <div style="background: #e74c3c; padding: 15px; border-radius: 8px; text-align: center;">
                         <div style="font-size: 2rem;" id="totalPlays">0</div>
-                        <div>האזנות</div>
+                        <div>השמעות</div>
                     </div>
                     <div style="background: #9b59b6; padding: 15px; border-radius: 8px; text-align: center;">
                         <div style="font-size: 1.2rem;" id="storageInfo">0 MB</div>
-                        <div>שימוש באחסון</div>
+                        <div>אחסון</div>
                     </div>
                 </div>
                 
-                <div style="margin-top: 20px; padding: 15px; background: #34495e; border-radius: 8px; color: white; font-size: 0.9rem;" id="audioSupportInfo">
-                    <strong>בודק תמיכת דפדפן...</strong>
-                </div>
-                
                 <div style="margin-top: 20px; text-align: center;">
-                    <button class="admin-btn danger" onclick="resetAllData()" style="background: #e67e22;">
-                        🔄 איפוס כל הנתונים (יאפס הכל!)
-                    </button>
-                    <button class="admin-btn" onclick="refreshPage()" style="background: #16a085;">
-                        ♻️ רענן דף
-                    </button>
+                    <button class="admin-btn danger" onclick="resetAllData()">🔄 איפוס כל הנתונים</button>
                 </div>
-                
-                <div style="margin-top: 15px; padding: 10px; background: #f39c12; border-radius: 8px; color: white; font-size: 0.8rem;">
-                    <strong>🐛 פתרון בעיות אודיו:</strong><br>
-                    • לחצו F12 לפתיחת כלי מפתח ובדקו את הקונסול<br>
-                    • ודאו שעוצמת הקול במחשב גבוהה<br>
-                    • נסו קובץ MP3 איכותי (לא מפוחת איכות)<br>
-                    • בדקו שהדפדפן תומך בפורמט הקובץ למעלה<br>
-                    • לחצו על כפתור 🔍 בנגן לבדיקת אודיו<br>
-                    • לחצו על 🔍 ליד הסיפור במסך ניהול לדיבאג מפורט
-                </div>
-            </div>
-        </div>
-
-    <!-- ניווט תחתון -->
-    <div class="bottom-nav">
-        <button class="nav-btn" onclick="toggleAdmin()" title="פאנל ניהול">⚙️</button>
-        <button class="nav-btn" onclick="goHome()" title="חזרה לעמוד הבית">🏠</button>
-    </div>
-
-        <!-- מסך התחברות לניהול -->
-        <div class="admin-login" id="adminLogin">
-            <div class="login-form">
-                <h3>🔐 התחברות למסך ניהול</h3>
-                <input type="password" class="login-input" id="adminPassword" placeholder="הכניסו סיסמה">
-                <div id="loginError" style="color: #e74c3c; margin: 10px 0; display: none;">סיסמה שגויה</div>
-                <button class="login-btn" onclick="checkPassword()">התחבר</button>
-                <button class="login-btn cancel" onclick="closeLogin()">ביטול</button>
             </div>
         </div>
     </div>
@@ -634,100 +534,118 @@
     <div class="bottom-nav">
         <button class="nav-btn" onclick="toggleAdmin()" title="פאנל ניהול">⚙️</button>
         <button class="nav-btn" onclick="goHome()" title="חזרה לעמוד הבית">🏠</button>
+    </div>
+
+    <!-- מסך התחברות -->
+    <div class="admin-login" id="adminLogin">
+        <div class="login-form">
+            <h3>🔐 התחברות למסך ניהול</h3>
+            <input type="password" class="login-input" id="adminPassword" placeholder="הכניסו סיסמה">
+            <div id="loginError" style="color: #e74c3c; margin: 10px 0; display: none;">סיסמה שגויה</div>
+            <button class="login-btn" onclick="checkPassword()">התחבר</button>
+            <button class="login-btn cancel" onclick="closeLogin()">ביטול</button>
+        </div>
     </div>
 
     <script>
         // משתנים גלובליים
-        let stories = JSON.parse(localStorage.getItem('stories')) || [];
-        let users = JSON.parse(localStorage.getItem('users')) || [];
-        let playStats = JSON.parse(localStorage.getItem('playStats')) || { totalPlays: 0 };
+        let stories = [];
+        let playStats = { totalPlays: 0 };
         let isPlaying = false;
         let currentAudio = null;
+        let currentStory = null;
         let isAdminLoggedIn = false;
-        const adminPassword = 'admin123'; // ניתן לשנות את הסיסמה כאן
+        const adminPassword = 'admin123';
         let filteredStories = [];
-
-        // תרגומים
-        const translations = {
-            he: {
-                title: 'מוזיאון הסיפורים',
-                subtitle: 'גלו את הסיפורים המרתקים של תל אביב',
-                personal: 'האזנה אישית',
-                personalDesc: 'בחרו סיפור והאזינו באוזניות הפרטיות שלכם',
-                group: 'האזנה קבוצתית', 
-                groupDesc: 'הצטרפו להאזנה משותפת בבר ובשולחנות בית הקפה',
-                qr: 'סריקת QR',
-                qrDesc: 'סרקו את הקוד בכיסא האישי והאזינו באוזניות שלכם'
-            },
-            en: {
-                title: 'Stories Museum',
-                subtitle: 'Discover the fascinating stories of Tel Aviv',
-                personal: 'Personal Listening',
-                personalDesc: 'Choose a story and listen with your personal headphones',
-                group: 'Group Listening',
-                groupDesc: 'Join shared listening at the bar and cafe tables',
-                qr: 'QR Scan',
-                qrDesc: 'Scan the code on the personal chair and listen with your headphones'
-            },
-            ar: {
-                title: 'متحف القصص',
-                subtitle: 'اكتشف القصص الرائعة لتل أبيب',
-                personal: 'استماع شخصي',
-                personalDesc: 'اختر قصة واستمع بسماعاتك الشخصية',
-                group: 'استماع جماعي',
-                groupDesc: 'انضم للاستماع المشترك في البار وطاولات المقهى',
-                qr: 'مسح QR',
-                qrDesc: 'امسح الكود على الكرسي الشخصي واستمع بسماعاتك'
-            }
-        };
 
         // אתחול האפליקציה
         document.addEventListener('DOMContentLoaded', function() {
-            // איפוס מלא של הנתונים הישנים אם אין audioData
-            const storedStories = JSON.parse(localStorage.getItem('stories')) || [];
-            if (storedStories.length > 0 && !storedStories[0].hasOwnProperty('audioData')) {
-                console.log('מעדכן מבנה נתונים ישן...');
-                localStorage.removeItem('stories');
-                stories = [];
-            } else {
-                stories = storedStories;
-            }
-            
             loadStoriesFromStorage();
-            loadUsersFromStorage();
             updateStats();
             setupEventListeners();
             
-            // הוספת מאזין ללחיצת Enter במסך התחברות
+            // אם אין סיפורים, הוסף לדוגמה
+            if (stories.length === 0) {
+                addSampleStories();
+            }
+            
+            filteredStories = stories;
+            displayStories();
+        });
+
+        // הגדרת מאזינים
+        function setupEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', function() {
+                searchStories(this.value);
+            });
+
             document.getElementById('adminPassword').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     checkPassword();
                 }
             });
 
-            // הגדרת חיפוש
-            document.getElementById('searchInput').addEventListener('input', function() {
-                searchStories(this.value);
+            // מאזינים לנגן האודיו
+            const audioPlayer = document.getElementById('realAudioPlayer');
+            audioPlayer.addEventListener('loadstart', () => {
+                updateAudioStatus('טוען קובץ אודיו...');
             });
-
-            // הגדרת עוצמת קול התחלתית
-            document.getElementById('volumeControl').value = 100;
             
-            // הוספת סיפורים לדוגמה אם אין
-            if (stories.length === 0) {
-                addSampleStories();
-            }
+            audioPlayer.addEventListener('loadeddata', () => {
+                updateAudioStatus('קובץ נטען בהצלחה');
+            });
+            
+            audioPlayer.addEventListener('canplay', () => {
+                updateAudioStatus('מוכן להשמעה');
+            });
+            
+            audioPlayer.addEventListener('play', () => {
+                isPlaying = true;
+                document.getElementById('playPauseBtn').textContent = '⏸️';
+                updateAudioStatus('מתנגן...');
+            });
+            
+            audioPlayer.addEventListener('pause', () => {
+                isPlaying = false;
+                document.getElementById('playPauseBtn').textContent = '▶️';
+                updateAudioStatus('מושהה');
+            });
+            
+            audioPlayer.addEventListener('ended', () => {
+                isPlaying = false;
+                document.getElementById('playPauseBtn').textContent = '▶️';
+                updateAudioStatus('הסתיים');
+            });
+            
+            audioPlayer.addEventListener('error', (e) => {
+                console.error('Audio error:', e);
+                updateAudioStatus('שגיאה בנגינת האודיו');
+                showErrorMessage('שגיאה בנגינת קובץ האודיו');
+            });
+        }
 
-            // אתחול רשימת הסיפורים המסוננים
-            filteredStories = stories;
+        // עדכון סטטוס האודיו
+        function updateAudioStatus(status) {
+            document.getElementById('audioStatus').textContent = status;
+        }
 
-            // הצגת כל הסיפורים בהתחלה
-            displayStories();
-        });
+        // הצגת הודעות
+        function showErrorMessage(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
 
-        // הגדרת מאזינים לאירועים
-        function setupEventListeners() {
-            // כאן ניתן להוסיף מאזינים נוספים בעתיד
+        function showSuccessMessage(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
         }
 
         // חיפוש סיפורים
@@ -747,7 +665,7 @@
         function playRandomStory() {
             const availableStories = filteredStories.length > 0 ? filteredStories : stories;
             if (availableStories.length === 0) {
-                alert('אין סיפורים זמינים');
+                showErrorMessage('אין סיפורים זמינים');
                 return;
             }
             
@@ -769,28 +687,40 @@
                 return;
             }
             
-            storiesToShow.forEach((story, index) => {
+            storiesToShow.forEach((story) => {
                 const card = document.createElement('div');
                 card.className = 'story-card';
                 
-                // הוספת תג שפה
                 const languageTag = story.language === 'he' ? 'עברית' : 
                                    story.language === 'en' ? 'English' : 'العربية';
+                
+                const audioIcon = story.audioData ? '🎵' : '🔇';
                 
                 card.innerHTML = `
                     <div class="story-title">${story.title}</div>
                     <div class="story-description">${story.description}</div>
-                    <div class="story-duration">⏱️ ${story.duration} דקות | 🌐 ${languageTag}</div>
-                    <button class="play-btn" onclick="playStory(${story.id})">▶️ האזנה</button>
+                    <div class="story-duration">⏱️ ${story.duration} דקות | 🌐 ${languageTag} | ${audioIcon}</div>
+                    <button class="play-btn" onclick="playStory(${story.id})" 
+                            ${!story.audioData ? 'disabled style="background: #95a5a6;"' : ''}>
+                        ${story.audioData ? '▶️ האזנה' : '🔇 אין אודיו'}
+                    </button>
                 `;
                 grid.appendChild(card);
             });
         }
 
-        // נגינת סיפור
+        // נגינת סיפור - התיקון העיקרי!
         function playStory(storyId) {
             const story = stories.find(s => s.id === storyId);
-            if (!story) return;
+            if (!story) {
+                showErrorMessage('סיפור לא נמצא');
+                return;
+            }
+
+            if (!story.audioData) {
+                showErrorMessage('לסיפור הזה אין קובץ אודיו');
+                return;
+            }
 
             // עדכון סטטיסטיקות
             playStats.totalPlays++;
@@ -798,173 +728,87 @@
             updateStats();
 
             // הצגת הנגן
+            currentStory = story;
             document.getElementById('currentStoryTitle').textContent = story.title;
             document.getElementById('audioPlayer').style.display = 'block';
             
-            // סימולציה של נגינה
-            simulateAudioPlayback(story);
+            // הגדרת הנגן האמיתי
+            const audioPlayer = document.getElementById('realAudioPlayer');
+            audioPlayer.src = story.audioData;
+            audioPlayer.volume = document.getElementById('volumeControl').value / 100;
+            
+            updateAudioStatus('טוען...');
+            
+            // ניסיון נגינה
+            setTimeout(() => {
+                audioPlayer.play().catch(error => {
+                    console.error('Play error:', error);
+                    showErrorMessage('שגיאה בהתחלת הנגינה. נסו שוב.');
+                });
+            }, 100);
         }
 
-        // סימולציה של נגינת אודיו
-        function simulateAudioPlayback(story) {
-            isPlaying = true;
-            let progress = 0;
-            const progressBar = document.getElementById('progressBar');
-            
-            const interval = setInterval(() => {
-                if (!isPlaying) {
-                    clearInterval(interval);
-                    return;
-                }
-                
-                progress += 1;
-                progressBar.value = progress;
-                
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    isPlaying = false;
-                    closePlayer();
-                }
-            }, (story.duration * 60 * 1000) / 100); // מחלק את הזמן ל-100 חלקים
-        }
-
-        // דיבאג סיפור
-        function debugStory(storyId) {
-            const story = stories.find(s => s.id === storyId);
-            if (!story) {
-                alert('סיפור לא נמצא');
-                return;
-            }
-            
-            let debugInfo = `📊 מידע על הסיפור "${story.title}":\n\n`;
-            debugInfo += `🆔 ID: ${story.id}\n`;
-            debugInfo += `📝 תיאור: ${story.description}\n`;
-            debugInfo += `⏱️ משך: ${story.duration} דקות\n`;
-            debugInfo += `🌐 שפה: ${story.language}\n`;
-            debugInfo += `📅 נוצר: ${new Date(story.createdAt).toLocaleString('he-IL')}\n\n`;
-            
-            // בדיקת קובץ אודיו
-            debugInfo += `🎵 מידע על אודיו:\n`;
-            debugInfo += `📁 שם קובץ: "${story.audioFile || 'ללא'}"\n`;
-            
-            if (story.audioData) {
-                debugInfo += `📊 גודל נתונים: ${Math.round(story.audioData.length / 1024)}KB\n`;
-                debugInfo += `🔢 תחילת נתונים: ${story.audioData.substring(0, 50)}...\n`;
-                debugInfo += `✅ סטטוס: נתוני אודיו קיימים\n`;
-                
-                // בדיקה אם זה Data URL תקין
-                if (story.audioData.startsWith('data:audio/')) {
-                    debugInfo += `✅ פורמט: Data URL תקין\n`;
-                } else {
-                    debugInfo += `❌ פורמט: Data URL לא תקין!\n`;
-                }
+        // בקרות נגן
+        function togglePlay() {
+            const audioPlayer = document.getElementById('realAudioPlayer');
+            if (audioPlayer.paused) {
+                audioPlayer.play().catch(error => {
+                    console.error('Play error:', error);
+                    showErrorMessage('שגיאה בהתחלת הנגינה');
+                });
             } else {
-                debugInfo += `❌ אין נתוני אודיו\n`;
+                audioPlayer.pause();
             }
-            
-            alert(debugInfo);
         }
 
-        // תיקון סיפור עם אודיו שבור
-        function fixStoryAudio(storyId) {
-            const story = stories.find(s => s.id === storyId);
-            if (!story) return;
-            
-            // איפוס נתוני האודיו הפגומים
-            story.audioData = '';
-            story.audioFile = '';
-            
-            // שמירה
-            localStorage.setItem('stories', JSON.stringify(stories));
-            displayStoriesInAdmin();
-            
-            alert(`הסיפור "${story.title}" תוקן. כעת תוכלו להעלות קובץ אודיו חדש עבורו.`);
+        function skipBackward() {
+            const audioPlayer = document.getElementById('realAudioPlayer');
+            audioPlayer.currentTime = Math.max(0, audioPlayer.currentTime - 10);
         }
+
+        function skipForward() {
+            const audioPlayer = document.getElementById('realAudioPlayer');
+            audioPlayer.currentTime = Math.min(audioPlayer.duration, audioPlayer.currentTime + 10);
+        }
+
         function updateVolume() {
             const audioPlayer = document.getElementById('realAudioPlayer');
             const volumeControl = document.getElementById('volumeControl');
-            const volume = volumeControl.value / 100;
-            audioPlayer.volume = volume;
-            
-            // עדכון מידע
-            document.getElementById('audioDebug').innerHTML = `🔊 עוצמה: ${volumeControl.value}%`;
+            audioPlayer.volume = volumeControl.value / 100;
         }
 
-        // בדיקת אודיו
         function testAudio() {
             const audioPlayer = document.getElementById('realAudioPlayer');
-            const debugDiv = document.getElementById('audioDebug');
-            const statusDiv = document.getElementById('audioStatus');
-            
-            statusDiv.textContent = '🔍 מריץ בדיקת אודיו...';
-            
-            if (!audioPlayer.src || audioPlayer.src === '') {
-                statusDiv.textContent = '❌ אין קובץ אודיו טעון';
-                debugDiv.innerHTML = `
-                    🚨 לא נמצא קובץ אודיו<br>
-                    💡 הוסיפו קובץ אודיו בעריכת הסיפור<br>
-                    🔧 או לחצו F12 ובדקו שגיאות בקונסול
-                `;
+            if (!audioPlayer.src) {
+                showErrorMessage('אין קובץ אודיו טעון');
                 return;
             }
             
-            // מידע על הקובץ
-            debugDiv.innerHTML = `
-                📁 מקור קיים: ✅<br>
-                📊 מוכן: ${audioPlayer.readyState}/4<br>
-                🔊 עוצמה: ${Math.round(audioPlayer.volume * 100)}%<br>
-                ⏱️ משך: ${audioPlayer.duration ? Math.round(audioPlayer.duration) + ' שניות' : 'טוען...'}
-            `;
-            
-            // ניסיון נגינה
-            statusDiv.textContent = '🔍 בודק אודיו...';
-            
+            updateAudioStatus('בודק אודיו...');
+            audioPlayer.currentTime = 0;
             audioPlayer.play().then(() => {
-                statusDiv.textContent = '✅ האודיו עובד! אמור להישמע עכשיו';
-                debugDiv.innerHTML += '<br>🎵 הבדיקה הצליחה - האודיו תקין';
+                updateAudioStatus('בדיקה הצליחה! האודיו תקין');
                 setTimeout(() => {
                     audioPlayer.pause();
                     audioPlayer.currentTime = 0;
-                    statusDiv.textContent = '✅ בדיקה הושלמה - האודיו תקין';
-                }, 2000);
+                }, 3000);
             }).catch(error => {
-                statusDiv.textContent = `❌ שגיאה: ${error.message}`;
-                debugDiv.innerHTML += `<br>🚨 שגיאה: ${error}<br>💡 נסו לטעון קובץ MP3 אחר`;
-                console.error('Test audio error:', error);
+                console.error('Test error:', error);
+                showErrorMessage('בדיקת האודיו נכשלה: ' + error.message);
             });
-        }
-        function togglePlay() {
-            const audioPlayer = document.getElementById('realAudioPlayer');
-            
-            // אם יש אודיו אמיתי
-            if (audioPlayer.src && audioPlayer.style.display !== 'none') {
-                if (audioPlayer.paused) {
-                    audioPlayer.play();
-                    isPlaying = true;
-                } else {
-                    audioPlayer.pause();
-                    isPlaying = false;
-                }
-            } else {
-                // סימולציה
-                isPlaying = !isPlaying;
-            }
         }
 
         function closePlayer() {
             const audioPlayer = document.getElementById('realAudioPlayer');
             audioPlayer.pause();
             audioPlayer.src = '';
-            audioPlayer.style.display = 'none';
-            
-            document.getElementById('simulationProgress').style.display = 'flex';
-            document.getElementById('progressBar').value = 0;
-            document.getElementById('audioStatus').textContent = '';
             document.getElementById('audioPlayer').style.display = 'none';
             isPlaying = false;
+            currentStory = null;
+            updateAudioStatus('מוכן להשמעה');
         }
 
-        // ניהול סיפורים
+        // הוספת סיפור
         function addStory() {
             const title = document.getElementById('storyTitle').value.trim();
             const description = document.getElementById('storyDescription').value.trim();
@@ -973,86 +817,46 @@
             const fileInput = document.getElementById('storyFile');
             
             if (!title || !description || !duration) {
-                alert('אנא מלאו את כל השדות החובה (שם, תיאור, משך)');
+                showErrorMessage('אנא מלאו את כל השדות החובה');
                 return;
             }
             
-            if (duration < 1 || duration > 120) {
-                alert('משך הסיפור חייב להיות בין 1 ל-120 דקות');
+            if (duration < 1 || duration > 60) {
+                showErrorMessage('משך הסיפור חייב להיות בין 1 ל-60 דקות');
                 return;
             }
             
-            // בדיקה אם יש קובץ אודיו
+            // בדיקת קובץ אודיו
             if (fileInput.files && fileInput.files[0]) {
                 const file = fileInput.files[0];
                 
-                // בדיקה שזה קובץ אודיו
                 if (!file.type.startsWith('audio/')) {
-                    alert('אנא בחרו קובץ אודיו תקין');
+                    showErrorMessage('אנא בחרו קובץ אודיו תקין');
                     return;
                 }
                 
-                // בדיקת גודל קובץ (מקסימום 10MB)
                 const maxSize = 10 * 1024 * 1024; // 10MB
                 if (file.size > maxSize) {
-                    alert('קובץ האודיו גדול מדי. אנא בחרו קובץ קטן מ-10MB');
+                    showErrorMessage('קובץ האודיו גדול מדי (מקס 10MB)');
                     return;
                 }
                 
-                // הודעה על טעינה
-                const loadingMsg = document.createElement('div');
-                loadingMsg.innerHTML = '⏳ טוען קובץ אודיו... אנא המתינו';
-                loadingMsg.style.color = '#3498db';
-                loadingMsg.style.marginTop = '10px';
-                loadingMsg.style.fontWeight = 'bold';
-                document.getElementById('storyFile').parentNode.appendChild(loadingMsg);
+                updateAudioStatus('טוען קובץ אודיו...');
                 
-                // קריאת הקובץ והמרה ל-Data URL
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const audioData = e.target.result;
-                    console.log('קובץ נקרא בהצלחה:', {
-                        fileName: file.name,
-                        size: file.size,
-                        type: file.type,
-                        dataLength: audioData.length,
-                        dataStart: audioData.substring(0, 50)
-                    });
-                    
-                    // הסרת הודעת הטעינה
-                    if (loadingMsg.parentNode) {
-                        loadingMsg.parentNode.removeChild(loadingMsg);
-                    }
-                    
-                    saveStoryWithAudio(title, description, duration, language, file.name, audioData);
+                    saveStoryWithAudio(title, description, duration, language, file.name, e.target.result);
                 };
-                reader.onerror = function(error) {
-                    console.error('שגיאה בקריאת קובץ:', error);
-                    
-                    // הסרת הודעת הטעינה
-                    if (loadingMsg.parentNode) {
-                        loadingMsg.parentNode.removeChild(loadingMsg);
-                    }
-                    
-                    alert('שגיאה בטעינת קובץ האודיו: ' + error);
+                reader.onerror = function() {
+                    showErrorMessage('שגיאה בקריאת קובץ האודיו');
                 };
-                reader.onprogress = function(e) {
-                    if (e.lengthComputable) {
-                        const percent = Math.round((e.loaded / e.total) * 100);
-                        loadingMsg.innerHTML = `⏳ טוען קובץ אודיו... ${percent}%`;
-                    }
-                };
-                
                 reader.readAsDataURL(file);
             } else {
-                // שמירה ללא קובץ אודיו
                 saveStoryWithAudio(title, description, duration, language, '', '');
             }
         }
-        
+
         function saveStoryWithAudio(title, description, duration, language, fileName, audioData) {
-            console.log('שומר סיפור:', { title, fileName, hasAudio: !!audioData });
-            
             const story = {
                 id: Date.now(),
                 title,
@@ -1060,32 +864,21 @@
                 duration: parseInt(duration),
                 language,
                 audioFile: fileName,
-                audioData: audioData || '', // וידוא שיש ערך
+                audioData: audioData,
                 createdAt: new Date().toISOString()
             };
-            
-            // בדיקה שהנתונים תקינים לפני שמירה
-            if (audioData && !audioData.startsWith('data:audio/')) {
-                console.error('שגיאה: נתוני אודיו לא תקינים');
-                alert('שגיאה בשמירת קובץ האודיו. נסו שוב עם קובץ אחר.');
-                return;
-            }
             
             stories.push(story);
             
             try {
                 localStorage.setItem('stories', JSON.stringify(stories));
-                console.log('הסיפור נשמר בהצלחה');
+                showSuccessMessage(`סיפור "${title}" נוסף בהצלחה!`);
             } catch (error) {
-                console.error('שגיאה בשמירה:', error);
-                alert('שגיאה בשמירת הסיפור. הקובץ עלול להיות גדול מדי.');
-                // הסרת הסיפור מהרשימה אם השמירה נכשלה
+                console.error('Storage error:', error);
+                showErrorMessage('שגיאה בשמירת הסיפור - הקובץ גדול מדי');
                 stories.pop();
                 return;
             }
-            
-            // עדכון הרשימה המסוננת
-            filteredStories = stories;
             
             // איפוס הטופס
             document.getElementById('storyTitle').value = '';
@@ -1093,29 +886,21 @@
             document.getElementById('storyDuration').value = '';
             document.getElementById('storyFile').value = '';
             
+            filteredStories = stories;
             displayStoriesInAdmin();
             displayStories();
             updateStats();
-            
-            if (audioData) {
-                const audioSize = Math.round(audioData.length / 1024);
-                alert(`✅ סיפור "${title}" נוסף בהצלחה עם קובץ אודיו! 🎵\nגודל: ${audioSize}KB`);
-            } else {
-                alert(`✅ סיפור "${title}" נוסף בהצלחה! (ללא אודיו)`);
-            }
         }
 
         function deleteStory(id) {
             if (confirm('האם אתם בטוחים שברצונכם למחוק את הסיפור?')) {
                 stories = stories.filter(s => s.id !== id);
                 localStorage.setItem('stories', JSON.stringify(stories));
-                
-                // עדכון הרשימה המסוננת
                 filteredStories = filteredStories.filter(s => s.id !== id);
-                
                 displayStoriesInAdmin();
                 displayStories();
                 updateStats();
+                showSuccessMessage('הסיפור נמחק בהצלחה');
             }
         }
 
@@ -1132,21 +917,9 @@
                 const item = document.createElement('div');
                 item.className = 'story-item';
                 
-                // בדיקה מפורטת של אודיו
-                let audioInfo;
-                let audioDebugInfo = '';
-                
-                if (story.audioData && story.audioData.length > 0) {
-                    const audioSize = Math.round(story.audioData.length / 1024);
-                    audioInfo = `🎵 ${story.audioFile} (${audioSize}KB)`;
-                    audioDebugInfo = `✅ יש נתוני אודיו`;
-                } else if (story.audioFile && story.audioFile.length > 0) {
-                    audioInfo = `❌ ${story.audioFile} (קובץ לא נשמר)`;
-                    audioDebugInfo = `⚠️ יש שם קובץ אבל לא נתונים`;
-                } else {
-                    audioInfo = '🔇 ללא קובץ אודיו';
-                    audioDebugInfo = `ℹ️ לא הועלה קובץ`;
-                }
+                const audioInfo = story.audioData ? 
+                    `🎵 ${story.audioFile} (${Math.round(story.audioData.length / 1024)}KB)` : 
+                    '🔇 ללא אודיו';
                 
                 const languageTag = story.language === 'he' ? 'עברית' : 
                                    story.language === 'en' ? 'English' : 'العربية';
@@ -1155,127 +928,49 @@
                     <div>
                         <strong>${story.title}</strong> (${languageTag})<br>
                         <small>${story.description}</small><br>
-                        <small style="color: #3498db;">⏱️ ${story.duration} דקות | ${audioInfo}</small><br>
-                        <small style="color: #95a5a6;">${audioDebugInfo}</small>
+                        <small style="color: #3498db;">⏱️ ${story.duration} דקות | ${audioInfo}</small>
                     </div>
-                    <div style="display: flex; gap: 5px; flex-direction: column;">
-                        <button class="admin-btn danger" onclick="deleteStory(${story.id})" style="font-size: 0.8rem;">🗑️ מחק</button>
-                        <button class="admin-btn" onclick="debugStory(${story.id})" style="font-size: 0.8rem; background: #f39c12;">🔍 דיבאג</button>
-                    </div>
-                `;
-                list.appendChild(item);
-            });
-        }
-
-        // ניהול משתמשים
-        function addUser() {
-            const name = document.getElementById('userName').value;
-            const phone = document.getElementById('userPhone').value;
-            const language = document.getElementById('userLanguage').value;
-            
-            if (!name || !phone) {
-                alert('אנא מלאו את כל השדות');
-                return;
-            }
-            
-            const user = {
-                id: Date.now(),
-                name,
-                phone,
-                language,
-                preferences: {},
-                createdAt: new Date().toISOString()
-            };
-            
-            users.push(user);
-            localStorage.setItem('users', JSON.stringify(users));
-            
-            // איפוס הטופס
-            document.getElementById('userName').value = '';
-            document.getElementById('userPhone').value = '';
-            
-            displayUsersInAdmin();
-            updateStats();
-        }
-
-        function deleteUser(id) {
-            if (confirm('האם אתם בטוחים שברצונכם למחוק את המשתמש?')) {
-                users = users.filter(u => u.id !== id);
-                localStorage.setItem('users', JSON.stringify(users));
-                displayUsersInAdmin();
-                updateStats();
-            }
-        }
-
-        function displayUsersInAdmin() {
-            const list = document.getElementById('userList');
-            list.innerHTML = '';
-            
-            users.forEach(user => {
-                const item = document.createElement('div');
-                item.className = 'user-item';
-                item.innerHTML = `
                     <div>
-                        <strong>${user.name}</strong><br>
-                        <small>${user.phone} - ${user.language}</small>
+                        <button class="admin-btn danger" onclick="deleteStory(${story.id})">🗑️ מחק</button>
                     </div>
-                    <button class="admin-btn danger" onclick="deleteUser(${user.id})">🗑️ מחק</button>
                 `;
                 list.appendChild(item);
             });
         }
 
-        function exportUsers() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(users, null, 2));
-            const downloadAnchorNode = document.createElement('a');
-            downloadAnchorNode.setAttribute("href", dataStr);
-            downloadAnchorNode.setAttribute("download", "users.json");
-            document.body.appendChild(downloadAnchorNode);
-            downloadAnchorNode.click();
-            downloadAnchorNode.remove();
+        // טעינת נתונים
+        function loadStoriesFromStorage() {
+            const stored = localStorage.getItem('stories');
+            if (stored) {
+                try {
+                    stories = JSON.parse(stored);
+                } catch (error) {
+                    console.error('Error loading stories:', error);
+                    stories = [];
+                }
+            }
+            
+            const storedStats = localStorage.getItem('playStats');
+            if (storedStats) {
+                try {
+                    playStats = JSON.parse(storedStats);
+                } catch (error) {
+                    console.error('Error loading stats:', error);
+                    playStats = { totalPlays: 0 };
+                }
+            }
+            
+            displayStoriesInAdmin();
         }
 
         // עדכון סטטיסטיקות
         function updateStats() {
             document.getElementById('totalStories').textContent = stories.length;
-            document.getElementById('totalUsers').textContent = users.length;
             document.getElementById('totalPlays').textContent = playStats.totalPlays;
             
-            // בדיקת גודל אחסון
             const storageUsed = JSON.stringify(stories).length;
             const storageUsedMB = (storageUsed / (1024 * 1024)).toFixed(2);
-            
-            // הוספת מידע על השימוש באחסון
-            const storageInfo = document.getElementById('storageInfo');
-            if (storageInfo) {
-                storageInfo.textContent = `${storageUsedMB} MB`;
-            }
-
-            // מידע על תמיכה באודיו
-            const audioSupport = document.getElementById('audioSupportInfo');
-            if (audioSupport) {
-                const audio = document.createElement('audio');
-                const mp3Support = audio.canPlayType('audio/mpeg');
-                const wavSupport = audio.canPlayType('audio/wav');
-                const oggSupport = audio.canPlayType('audio/ogg');
-                
-                audioSupport.innerHTML = `
-                    <strong>תמיכת דפדפן באודיו:</strong><br>
-                    MP3: ${mp3Support ? '✅' : '❌'} | 
-                    WAV: ${wavSupport ? '✅' : '❌'} | 
-                    OGG: ${oggSupport ? '✅' : '❌'}<br>
-                    דפדפן: ${navigator.userAgent.split(' ')[0]}
-                `;
-            }
-        }
-
-        // טעינת נתונים מהאחסון המקומי
-        function loadStoriesFromStorage() {
-            displayStoriesInAdmin();
-        }
-
-        function loadUsersFromStorage() {
-            displayUsersInAdmin();
+            document.getElementById('storageInfo').textContent = `${storageUsedMB} MB`;
         }
 
         // הוספת סיפורים לדוגמה
@@ -1287,8 +982,8 @@
                     description: 'הסיפור הקסום מאחורי השוק הצבעוני ביותר בתל אביב',
                     duration: 8,
                     language: 'he',
-                    audioFile: 'carmel-market-he.mp3',
-                    audioData: '', // חשוב למבנה החדש
+                    audioFile: '',
+                    audioData: '',
                     createdAt: new Date().toISOString()
                 },
                 {
@@ -1297,50 +992,26 @@
                     description: 'מסע בזמן ברחוב האמנים הקסום',
                     duration: 12,
                     language: 'he',
-                    audioFile: 'carmel-market-he.mp3',
-                    audioData: '', // חשוב למבנה החדש
-                    createdAt: new Date().toISOString()
-                },
-                {
-                    id: 3,
-                    title: 'The Carmel Market Story',
-                    description: 'The magical story behind Tel Aviv\'s most colorful market',
-                    duration: 8,
-                    language: 'en',
-                    audioFile: 'carmel-market-he.mp3',
-                    audioData: '', // חשוב למבנה החדש
-                    createdAt: new Date().toISOString()
-                },
-                {
-                    id: 4,
-                    title: 'قصة سوق الكرمل',
-                    description: 'القصة السحرية وراء أكثر الأسواق تلونًا في تل أبيب',
-                    duration: 8,
-                    language: 'ar',
                     audioFile: '',
-                    audioData: '', // חשוב למבנה החדש
+                    audioData: '',
                     createdAt: new Date().toISOString()
                 }
             ];
             
             stories = sampleStories;
             localStorage.setItem('stories', JSON.stringify(stories));
-            
-            // עדכון הרשימה המסוננת
             filteredStories = stories;
-            
             displayStoriesInAdmin();
             updateStats();
         }
 
-        // ניהול התחברות למסך ניהול
+        // ניהול התחברות
         function toggleAdmin() {
             if (isAdminLoggedIn) {
                 const panel = document.getElementById('adminPanel');
                 panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
             } else {
-                const loginScreen = document.getElementById('adminLogin');
-                loginScreen.style.display = 'flex';
+                document.getElementById('adminLogin').style.display = 'flex';
                 document.getElementById('adminPassword').focus();
             }
         }
@@ -1368,41 +1039,22 @@
             document.getElementById('loginError').style.display = 'none';
         }
 
-        // אפשרות להוסיף Enter למסך התחברות
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('adminPassword').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    checkPassword();
-                }
-            });
-        });
-
-        // איפוס כל הנתונים
+        // פונקציות עזר
         function resetAllData() {
-            if (confirm('האם אתם בטוחים שברצונכם למחוק את כל הנתונים?\nפעולה זו תמחק את כל הסיפורים, המשתמשים והסטטיסטיקות!')) {
-                if (confirm('פעולה זו בלתי הפיכה! האם אתם בטוחים לחלוטין?')) {
-                    localStorage.clear();
-                    alert('כל הנתונים נמחקו. הדף יתרענן כעת.');
-                    location.reload();
-                }
+            if (confirm('האם אתם בטוחים שברצונכם למחוק את כל הנתונים?')) {
+                localStorage.clear();
+                location.reload();
             }
         }
 
-        function refreshPage() {
-            location.reload();
-        }
-
-        // ניווט
         function goHome() {
-            // איפוס חיפוש וחזרה לעמוד הראשי
             document.getElementById('searchInput').value = '';
-            filteredStories = [];
+            filteredStories = stories;
             displayStories();
-            document.getElementById('audioPlayer').style.display = 'none';
+            closePlayer();
             document.getElementById('adminPanel').style.display = 'none';
             document.getElementById('adminLogin').style.display = 'none';
-            isPlaying = false;
-            isAdminLoggedIn = false; // התנתקות מהניהול
+            isAdminLoggedIn = false;
         }
     </script>
 </body>
